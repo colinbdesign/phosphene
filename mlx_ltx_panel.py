@@ -9332,17 +9332,19 @@ HTML = r"""<!doctype html>
     .player-overlay-progress.failed .pop-meta {
       white-space: normal; overflow: visible; text-overflow: clip;
     }
-    .player-overlay-progress.failed .pop-title {
-      display: flex; align-items: center;
-    }
     .player-overlay-progress .player-progress-dismiss {
-      margin-left: auto; flex: 0 0 auto;
-      padding: 0 4px; background: transparent; border: none;
-      color: rgba(255,217,214,0.45); font-size: 14px; line-height: 1;
-      cursor: pointer; transition: color var(--t-fast);
+      position: absolute; top: 8px; right: 8px;
+      width: 22px; height: 22px; padding: 0;
+      border-radius: var(--r-xs); border: 1px solid transparent;
+      background: transparent; color: var(--muted);
+      font-size: 16px; line-height: 1; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: color var(--t-fast), background var(--t-fast), border-color var(--t-fast);
     }
     .player-overlay-progress .player-progress-dismiss:hover {
-      color: rgba(255,217,214,1);
+      color: var(--text);
+      border-color: rgba(248,81,73,0.45);
+      background: rgba(248,81,73,0.12);
     }
 
     /* Hidden compatibility slot — kept in the DOM for legacy callers but
@@ -19658,6 +19660,9 @@ function refreshPlayerProgressOverlay(s) {
   // Ring circumference for r=13 → 2*pi*13 ≈ 81.68. Pre-set in HTML;
   // we just sweep stroke-dashoffset between 81.68 (0%) and 0 (100%).
   const RING_C = 81.68;
+  // Clean up any dismiss button from a previous failed state.
+  const _existingDismiss = chip.querySelector('.player-progress-dismiss');
+  if (_existingDismiss) _existingDismiss.remove();
   if (s.running && s.current) {
     chip.classList.remove('failed');
     chip.style.display = '';
@@ -19698,10 +19703,15 @@ function refreshPlayerProgressOverlay(s) {
     ringFill.setAttribute('stroke', 'var(--danger)');
     ringFill.setAttribute('stroke-dashoffset', '0');
     ringPct.textContent = '!';
-    titleEl.innerHTML = `Last render failed <button type="button" class="player-progress-dismiss" title="Dismiss" ` +
-      `onclick="event.stopPropagation(); window._dismissedFailureId = ${JSON.stringify(last.id)}; ` +
-      `if (typeof poll === 'function') poll();">×</button>`;
+    titleEl.textContent = 'Last render failed';
     metaEl.textContent = last.error || 'unknown error';
+    const _dismissBtn = document.createElement('button');
+    _dismissBtn.type = 'button';
+    _dismissBtn.className = 'player-progress-dismiss';
+    _dismissBtn.title = 'Dismiss';
+    _dismissBtn.textContent = '×';
+    _dismissBtn.onclick = e => { e.stopPropagation(); window._dismissedFailureId = last.id; if (typeof poll === 'function') poll(); };
+    chip.appendChild(_dismissBtn);
     return;
   }
   chip.style.display = 'none';

@@ -9331,12 +9331,14 @@ HTML = r"""<!doctype html>
     .player-overlay-progress.failed .pop-ring-pct { color: var(--danger); }
     .player-overlay-progress.failed .pop-meta {
       white-space: normal; overflow: visible; text-overflow: clip;
-      padding-right: 24px;
+    }
+    .player-overlay-progress.failed .pop-title {
+      display: flex; align-items: center;
     }
     .player-overlay-progress .player-progress-dismiss {
-      position: absolute; top: 8px; right: 10px;
-      padding: 0; background: transparent; border: none;
-      color: rgba(255,217,214,0.55); font-size: 15px; line-height: 1;
+      margin-left: auto; flex: 0 0 auto;
+      padding: 0 4px; background: transparent; border: none;
+      color: rgba(255,217,214,0.45); font-size: 14px; line-height: 1;
       cursor: pointer; transition: color var(--t-fast);
     }
     .player-overlay-progress .player-progress-dismiss:hover {
@@ -19696,11 +19698,10 @@ function refreshPlayerProgressOverlay(s) {
     ringFill.setAttribute('stroke', 'var(--danger)');
     ringFill.setAttribute('stroke-dashoffset', '0');
     ringPct.textContent = '!';
-    titleEl.textContent = 'Last render failed';
-    metaEl.innerHTML = escapeHtml(last.error || 'unknown error') +
-      ` <button type="button" class="player-progress-dismiss" title="Dismiss this failure" ` +
+    titleEl.innerHTML = `Last render failed <button type="button" class="player-progress-dismiss" title="Dismiss" ` +
       `onclick="event.stopPropagation(); window._dismissedFailureId = ${JSON.stringify(last.id)}; ` +
       `if (typeof poll === 'function') poll();">×</button>`;
+    metaEl.textContent = last.error || 'unknown error';
     return;
   }
   chip.style.display = 'none';

@@ -9329,6 +9329,9 @@ HTML = r"""<!doctype html>
                   0 0 0 1px rgba(248,81,73,0.30) inset;
     }
     .player-overlay-progress.failed .pop-ring-pct { color: var(--danger); }
+    .player-overlay-progress.failed .pop-meta {
+      white-space: normal; overflow: visible; text-overflow: clip;
+    }
 
     /* Hidden compatibility slot — kept in the DOM for legacy callers but
        never visible. Real meta now lives in the top overlay. */
@@ -19684,7 +19687,7 @@ function refreshPlayerProgressOverlay(s) {
     ringFill.setAttribute('stroke-dashoffset', '0');
     ringPct.textContent = '!';
     titleEl.textContent = 'Last render failed';
-    metaEl.innerHTML = escapeHtml(snippet(last.error || 'unknown error', 80)) +
+    metaEl.innerHTML = escapeHtml(last.error || 'unknown error') +
       ` <button type="button" class="player-progress-dismiss" title="Dismiss this failure" ` +
       `onclick="event.stopPropagation(); window._dismissedFailureId = ${JSON.stringify(last.id)}; ` +
       `if (typeof poll === 'function') poll();">×</button>`;

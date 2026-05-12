@@ -9331,6 +9331,16 @@ HTML = r"""<!doctype html>
     .player-overlay-progress.failed .pop-ring-pct { color: var(--danger); }
     .player-overlay-progress.failed .pop-meta {
       white-space: normal; overflow: visible; text-overflow: clip;
+      padding-right: 24px;
+    }
+    .player-overlay-progress .player-progress-dismiss {
+      position: absolute; top: 8px; right: 10px;
+      padding: 0; background: transparent; border: none;
+      color: rgba(255,217,214,0.55); font-size: 15px; line-height: 1;
+      cursor: pointer; transition: color var(--t-fast);
+    }
+    .player-overlay-progress .player-progress-dismiss:hover {
+      color: rgba(255,217,214,1);
     }
 
     /* Hidden compatibility slot — kept in the DOM for legacy callers but

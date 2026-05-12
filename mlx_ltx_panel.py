@@ -2541,7 +2541,10 @@ def list_outputs(include_hidden: bool = False) -> list[dict]:
             continue
         # Failed-render protection — partial mp4s from crashed renders
         # were showing as black/short cards in the gallery.
-        if path_s in failed_paths:
+        # Exception: if a sidecar exists the file was subsequently completed
+        # by a successful re-run of the same prompt (same output path), so
+        # show it rather than hiding a valid render under a stale failure.
+        if path_s in failed_paths and not p.with_suffix(p.suffix + ".json").exists():
             continue
         try:
             mt = p.stat().st_mtime

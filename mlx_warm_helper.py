@@ -407,6 +407,14 @@ def get_pipe(kind: str, loras: list[dict] | None = None,
                     emit({"event": "log",
                           "line": f"LoRA set changed; reloading I2V pipeline."})
                     _i2v_pipe = None
+                    # Flush MLX's Metal buffer cache before loading the new pipeline.
+                    # Without this, the old pipeline's ~22 GB of Metal buffers remain
+                    # in mx's allocator pool and the new load OOMs the Metal heap.
+                    try:
+                        from ltx_core_mlx.utils.memory import aggressive_cleanup as _ac
+                        _ac()
+                    except Exception:
+                        pass
                 emit({"event": "log",
                       "line": "Loading I2V pipeline (first job is the slow one)..."})
                 pipe = ImageToVideoPipeline(
@@ -426,6 +434,11 @@ def get_pipe(kind: str, loras: list[dict] | None = None,
                     emit({"event": "log",
                           "line": f"{why}; reloading Extend pipeline."})
                     _extend_pipe = None
+                    try:
+                        from ltx_core_mlx.utils.memory import aggressive_cleanup as _ac
+                        _ac()
+                    except Exception:
+                        pass
                 emit({"event": "log",
                       "line": f"Loading Extend pipeline (heavier — uses dev transformer at {ext_dir})..."})
                 pipe = ExtendPipeline(
@@ -442,6 +455,11 @@ def get_pipe(kind: str, loras: list[dict] | None = None,
                 emit({"event": "log",
                       "line": f"LoRA set changed; reloading T2V pipeline."})
                 _t2v_pipe = None
+                try:
+                    from ltx_core_mlx.utils.memory import aggressive_cleanup as _ac
+                    _ac()
+                except Exception:
+                    pass
             emit({"event": "log",
                   "line": "Loading T2V pipeline (first job is the slow one)..."})
             pipe = TextToVideoPipeline(

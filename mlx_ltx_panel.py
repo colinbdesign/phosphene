@@ -19699,11 +19699,10 @@ function refreshPlayerProgressOverlay(s) {
   }
   // Surface a persistent failure chip on the player too, mirroring the
   // now-card's policy (don't let a fail drift back to a sleepy idle).
-  // Honors the same _dismissedFailureId the now-card does, so dismissing
-  // once clears both surfaces.
+  // Uses its own _dismissedFailureChipId so each chip closes independently.
   const last = (s.history || [])[0];
   const showFailure = last && last.status === 'failed' && !s.queue.length
-                      && last.id !== window._dismissedFailureId;
+                      && last.id !== window._dismissedFailureChipId;
   if (showFailure) {
     chip.classList.add('failed');
     chip.style.display = '';
@@ -19717,7 +19716,7 @@ function refreshPlayerProgressOverlay(s) {
     _dismissBtn.className = 'player-progress-dismiss';
     _dismissBtn.title = 'Dismiss';
     _dismissBtn.textContent = '×';
-    _dismissBtn.onclick = e => { e.stopPropagation(); window._dismissedFailureId = last.id; if (typeof poll === 'function') poll(); };
+    _dismissBtn.onclick = e => { e.stopPropagation(); window._dismissedFailureChipId = last.id; if (typeof poll === 'function') poll(); };
     chip.appendChild(_dismissBtn);
     return;
   }
